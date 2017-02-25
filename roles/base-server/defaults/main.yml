@@ -2,7 +2,7 @@ current_users:
   - name: crielly
     uid: 10001
     shell: /bin/bash
-    groups: operations,developers
+    groups: operations
     authorized:
       - ssh-keys/crielly-authorized_keys
 
