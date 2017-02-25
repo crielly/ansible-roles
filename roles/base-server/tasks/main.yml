@@ -1,0 +1,11 @@
+- name: Ensure python2 is installed
+  raw: sudo bash -c "test -e /usr/bin/python || (apt -qqy update && apt install -qy python-minimal)"
+  changed_when: False
+
+- include: users.yml
+  tags:
+    - users
+
+- include: packages.yml
+  tags:
+    - base-packages

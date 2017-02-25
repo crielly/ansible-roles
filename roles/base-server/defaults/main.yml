@@ -1,0 +1,27 @@
+current_users:
+  - name: crielly
+    uid: 10001
+    shell: /bin/bash
+    groups: operations,developers
+    authorized:
+      - ssh-keys/crielly-authorized_keys
+
+base_svr_groups:
+  - name: developers
+    groupid: 30000
+
+sudo_groups:
+  - name: operations
+    groupid: 31000
+
+ensure_latest_packages:
+  - logrotate
+  - bash
+  - openssh-client
+  - dstat
+  - tmux
+  - htop
+  - python3-pip
+
+apt_retry_num: 3
+apt_retry_delay: 10

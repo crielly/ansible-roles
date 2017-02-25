@@ -1,0 +1,9 @@
+- name: Ensure latest versions of a few packages
+  apt: 
+    pkg: "{{ item }}"
+    state: latest
+  with_items: "{{ ensure_latest_packages }}"
+  register: result
+  until: result | success
+  retries: "{{ apt_retry_num }}"
+  delay: "{{ apt_retry_delay }}"
