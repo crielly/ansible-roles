@@ -1,0 +1,28 @@
+var path = require('path'),
+    config;
+
+config = {
+    production: {
+        url: 'http://{{ ghost_dns }}',
+        mail: {},
+        database: {
+            client: 'pg',
+            connection: {
+                host: '{{ GHOST_PG_HOST }}',
+                port: '{{ GHOST_PG_PORT }}',
+                user: '{{ GHOST_PG_USER }}',
+                password: '{{ GHOST_PG_PW }}',
+                database: '{{ GHOST_PG_DBNAME }}',
+                charset: 'utf8'
+            },
+            debug: false
+        },
+
+        server: {
+            host: '127.0.0.1',
+            port: '{{ ghost_port }}'
+        }
+    }
+};
+
+module.exports = config;
