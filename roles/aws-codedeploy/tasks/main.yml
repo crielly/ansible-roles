@@ -1,0 +1,27 @@
+- name: Ensure latest versions of a few packages
+  pip: 
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - paramiko
+  register: result
+  until: result | success
+  retries: "{{ pip_retry_num }}"
+  delay: "{{ pip_retry_delay }}"
+
+- name: download codedeploy agent setup script
+  get_url:
+    url: https://{{ codedeploy_agent_bucket }}.s3.amazonaws.com/latest/install
+    dest: /tmp/codedeployagent-install.sh
+    mode: 0550
+
+- name: run codedeploy agent setup script
+  shell: /tmp/codedeployagent-install.sh auto
+  args:
+    creates: /opt/codedeploy-agent/bin/codedeploy-agent
+
+- name: run codedeploy agent service
+  service:
+    name: codedeploy-agent
+    state: started
+    enabled: yes
