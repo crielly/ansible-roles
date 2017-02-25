@@ -1,0 +1,11 @@
+---
+- hosts: all
+  gather_facts: true
+  become: true
+  tasks:
+
+  - name: gather EC2 facts
+    ec2_facts:
+
+  - name: Display all variables/facts for a host
+    debug: var=hostvars[inventory_hostname]
