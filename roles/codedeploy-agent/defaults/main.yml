@@ -1,0 +1,12 @@
+codedeploy_apt_dependencies:
+  - python-pip
+  - ruby
+
+codedeploy_pip_dependencies:
+  - paramiko
+
+pip_retry_num: 3
+pip_retry_delay: 5
+
+apt_retry_num: 3
+apt_retry_delay: 5
