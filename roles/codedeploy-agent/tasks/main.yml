@@ -1,0 +1,39 @@
+- name: gather EC2 facts
+  action: ec2_facts
+
+- name: Ensure apt dependencies are present
+  apt: 
+    pkg: "{{ item }}"
+    state: latest
+  with_items: "{{ codedeploy_apt_dependencies }}"
+  register: result
+  until: result | success
+  retries: "{{ apt_retry_num }}"
+  delay: "{{ apt_retry_delay }}"
+
+- name: Ensure pip dependencies are present
+  pip: 
+    name: "{{ item }}"
+    state: latest
+  with_items: "{{ codedeploy_pip_dependencies }}"
+  register: result
+  until: result | success
+  retries: "{{ pip_retry_num }}"
+  delay: "{{ pip_retry_delay }}"
+
+- name: download codedeploy agent setup script
+  get_url:
+    url: https://aws-codedeploy-{{ ansible_ec2_placement_region }}.s3.amazonaws.com/latest/install
+    dest: /tmp/codedeployagent-install.sh
+    mode: 0500
+
+- name: run codedeploy agent setup script
+  shell: /tmp/codedeployagent-install.sh auto
+  args:
+    creates: /opt/codedeploy-agent/bin/codedeploy-agent
+
+- name: run and enable codedeploy agent
+  service:
+    name: codedeploy-agent
+    state: started
+    enabled: yes
