@@ -1,0 +1,31 @@
+- name: Create Groups
+  group: 
+    name: "{{ item.name }}"
+    state: present 
+    gid: "{{ item.groupid }}"
+  with_items: "{{ base_svr_groups }}"
+
+- name: Create users
+  user: 
+    name: "{{ item.name }}"
+    state: present
+    uid: "{{ item.uid }}"
+    shell: "{{ item.shell }}"
+    groups: "{{ item.groups }}"
+    append: yes
+  with_items: "{{ current_users }}"
+  
+- name: Allow specified groups to sudo
+  template: 
+    src: operations-sudo.j2
+    dest: /etc/sudoers.d/sudoers
+    validate: 'visudo -cf %s'
+    mode: 440
+
+- name: Copy pubkeys into users authorized_key files
+  authorized_key:
+    user: "{{ item.0.name }}"
+    key: "{{ lookup('file', item.1) }}"
+  with_subelements:
+    - "{{ current_users }}"
+    - authorized 
