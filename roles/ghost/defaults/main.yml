@@ -1,0 +1,10 @@
+www_dir: /opt/ghost
+ghost_port: 2368
+ghost_user: ghost
+ghost_user_group: ghost
+
+GHOST_PG_HOST: "postgres.yourdomain.com"
+GHOST_PG_PORT: 5432
+GHOST_PG_USER: "someuser"
+GHOST_PG_PW: "somepassword"
+GHOST_PG_DBNAME: "yourghostblog"

@@ -1,0 +1,21 @@
+[Unit]
+Description=ghost
+
+[Service]
+Type=simple
+WorkingDirectory={{ www_dir }}/ghost
+
+ExecStart=/usr/bin/npm start --production
+ExecStop=/usr/bin/npm stop --production
+Restart=always
+SyslogIdentifier=Ghost
+
+User={{ ghost_user }}
+Group={{ ghost_user_group }}
+ProtectSystem=full
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,16 @@
+- name: start ghost
+  service:
+    name: ghost.service
+    state: started
+    enabled: yes
+
+- name: stop ghost
+  service:
+    name: ghost.service
+    state: started
+    enabled: no
+
+- name: restart ghost
+  service:
+    name: ghost.service
+    state: restarted

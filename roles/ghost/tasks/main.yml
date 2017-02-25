@@ -1,0 +1,38 @@
+
+- name: Create ghost group
+  group: 
+    name: "{{ ghost_user_group }}"
+    state: present
+
+- name: Create ghost user
+  user: 
+    name: "{{ ghost_user }}"
+    shell: /bin/bash
+    groups: ghost
+
+- name: lay down ghost init conf file
+  template:
+    src: ghost-service.j2
+    dest: /etc/systemd/system/ghost.service
+    mode: 0644
+    owner: root
+    group: root
+
+- name: lay down ghost config.js
+  template:
+    src: ghost-config.js.j2
+    dest: "/etc/ghost-config.js"
+    mode: 0644
+    owner: ghost
+
+- name: Lay down Nginx server block
+  template:
+    src: ghost-nginx-block.j2
+    dest: "{{ nginx_sites_dir }}/ghost"
+  notify: reload nginx
+
+- name: ensure ghost service is enabled
+  systemd:
+    name: ghost.service
+    enabled: yes
+    masked: no
