@@ -2,17 +2,21 @@ current_users:
   - name: crielly
     uid: 10001
     shell: /bin/bash
-    groups: operations,developers
+    groups: operations
     authorized:
       - ssh-keys/crielly-authorized_keys
 
 base_svr_groups:
   - name: developers
     groupid: 30000
-
-sudo_groups:
+    sudo: false
   - name: operations
     groupid: 31000
+    sudo: true
+  - name: qa
+    groupid: 32000
+    sudo: false
+
 
 ensure_latest_packages:
   - logrotate
