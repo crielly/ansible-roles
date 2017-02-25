@@ -1,0 +1,59 @@
+- name: Ensure Nginx repo is available
+  apt_repository: 
+    repo: "{{ nginx_repo }}"
+    state: present 
+    update_cache: yes
+  register: result
+  until: result | success
+  retries: "{{ apt_retry_num }}"
+  delay: "{{ apt_retry_delay }}"
+
+- name: Ensure package dependencies are installed
+  apt: 
+    pkg: "{{ item }}"
+    state: present
+  with_items: "{{ nginx_apt_dependencies }}"
+  register: result
+  until: result | success
+  retries: "{{ apt_retry_num }}"
+  delay: "{{ apt_retry_delay }}"
+
+- name: Create nginx group
+  group: 
+    name: "{{ nginx_group }}"
+    state: present 
+
+- name: Create nginx user
+  user: 
+    name: "{{ nginx_user }}"
+    state: present
+    shell: /bin/false
+    groups: "{{ nginx_group }}"
+    append: yes
+
+- name: Ensure nginx log directory exists
+  file: 
+    state: directory 
+    path: "{{ nginx_log_dir }}"
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_group }}"
+    recurse: yes
+  notify:
+    - restart nginx
+
+- name: Ensure there is no default server block
+  file: 
+    dest: /etc/nginx/sites-enabled/default 
+    state: absent
+  notify:
+    - reload nginx
+
+- name: Lay down config templates
+  template:
+    src: "{{ item.0 }}"
+    dest: "{{ item.1 }}"
+  with_together:
+    - "{{ nginx_template_sources }}"
+    - "{{ nginx_template_dests }}"
+  notify: 
+    - restart nginx
