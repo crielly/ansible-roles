@@ -1,0 +1,7 @@
+{{ nginx_log_dir }}/*.log {
+        daily
+        missingok
+        rotate {{ nginx_logrotate_retain }}
+        compress
+        create 0640 {{ nginx_user }} {{ nginx_group }}
+}

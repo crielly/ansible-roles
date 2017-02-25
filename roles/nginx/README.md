@@ -1,0 +1,2 @@
+This role configures a very basic nginx installation. It also removes the default server block, so it won't serve anything by default. 
+It expects that you're going to lay down your own server block file during the playbook run, then handlers bounce the process at the end.

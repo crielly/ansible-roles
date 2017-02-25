@@ -1,0 +1,23 @@
+nginx_repo: ppa:nginx/stable
+nginx_log_dir: /var/log/nginx
+nginx_sites_dir: /etc/nginx/sites-enabled
+nginx_user: nginx
+nginx_group: nginx
+nginx_pidfile: /var/run/nginx.pid
+nginx_logrotate_retain: 7
+nginx_worker_processes: 2
+
+nginx_template_sources:
+  - nginx.conf.j2
+  - logrotate.conf.j2
+
+nginx_template_dests:
+  - /etc/nginx/nginx.conf
+  - /etc/logrotate.d/nginx
+
+nginx_apt_dependencies:
+  - nginx
+  - logrotate
+
+apt_retry_num: 3
+apt_retry_delay: 5
