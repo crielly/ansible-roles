@@ -43,7 +43,7 @@
 
 - name: Ensure there is no default server block
   file: 
-    dest: /etc/nginx/sites-enabled/default 
+    dest: "{{ nginx_sites_dir }}/default"
     state: absent
   notify:
     - reload nginx
