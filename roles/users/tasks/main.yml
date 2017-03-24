@@ -28,4 +28,4 @@
     key: "{{ lookup('file', item.1) }}"
   with_subelements:
     - "{{ current_users }}"
-    - authorized 
+    - authorized

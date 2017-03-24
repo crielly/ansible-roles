@@ -1,0 +1,2 @@
+dependencies:
+  - { role: base-server, when: skipdeps is not defined }

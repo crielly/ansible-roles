@@ -1,0 +1,64 @@
+- name: Add ZFS Repo
+  apt_repository:
+    repo: "{{ zfs_apt_repo }}"
+    state: present
+    update_cache: yes
+  register: result
+  until: result | success
+  retries: "{{ apt_retry_num }}"
+  delay: "{{ apt_retry_delay }}"
+  tags: add_repos
+
+- name: Ensure ZFS APT dependencies are installed
+  apt:
+    pkg: "{{ item }}"
+    state: installed
+  with_items: "{{ zfs_apt_deps }}"
+  register: result
+  until: result | success
+  retries: "{{ apt_retry_num }}"
+  delay: "{{ apt_retry_delay }}"
+
+- name: load ZFS kernel modules post-install
+  modprobe:
+    name: zfs
+    state: present
+
+- name: Create an empty list of devices to which we'll add any ephemeral devices we find
+  set_fact:
+    devices: []
+
+- name: Check list of ephemeral mount points for devices
+  stat:
+    path: "/dev/xvd{{ item }}"
+  with_items: "{{ ephemeral_mount_points }}"
+  register: ephem_disks
+
+- name: Add device to ephem_disks list if it exists and is a block device
+  set_fact:
+    devices: "{{ devices }} + ['{{ item.stat.path }}']"
+  when: item.stat.exists and item.stat.isblk
+  with_items: "{{ ephem_disks.results }}"
+
+- name: check for an existing zpool
+  command: zpool status {{ zpool_name }}
+  register: zpool_check
+  ignore_errors: True
+
+- name: set deploy_zfs to true if no existing raid, 
+  set_fact:
+    deploy_zfs: true
+  when: zpool_check|failed
+
+- debug: msg="Deploy ZFS - {{ deploy_zfs | default('false') }}"
+
+- name: ensure all ephemeral devices are unmounted
+  command: "umount {{ item }}"
+  with_items:
+    - "{{ devices }}"
+  when: "{{ deploy_zfs | default('false') }}"
+  ignore_errors: True
+
+- name: Create zpool using all available ephemeral disks if one doesn't already exist
+  command: zpool create -f {{ zpool_name }} {{ devices | join(" ") }}
+  when: "{{ deploy_zfs | default('false') }}"

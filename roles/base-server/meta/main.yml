@@ -1,0 +1,3 @@
+dependencies:
+  - { role: zfs-ephemeral, when: skipdeps is not defined }
+  - { role: users, when: skipdeps is not defined }
