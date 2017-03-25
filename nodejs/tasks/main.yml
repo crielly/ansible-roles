@@ -1,0 +1,11 @@
+- include: swap.yml
+
+- name: Install Node.js and NPM
+  apt: 
+    pkg: "{{ item }}"
+    state: installed
+  with_items: "{{ nodedeps }}"
+  register: result
+  until: result | success
+  retries: "{{ apt_retry_num }}"
+  delay: "{{ apt_retry_delay }}"

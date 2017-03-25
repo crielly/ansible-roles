@@ -4,7 +4,7 @@ upstream ghost {
 
 server {
   listen 80;
-  server_name {{ tastycidr_dns }};
+  server_name {{ ghost_dns }};
 
   location / {
     proxy_set_header X-Real-IP $remote_addr;
