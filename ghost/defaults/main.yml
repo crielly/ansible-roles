@@ -1,4 +1,5 @@
 www_dir: /opt/ghost
+ghost_dns: www.somedomain.com
 ghost_port: 2368
 ghost_user: ghost
 ghost_user_group: ghost

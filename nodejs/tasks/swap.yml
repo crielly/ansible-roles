@@ -1,0 +1,67 @@
+- name: Create swap file
+  command: dd if=/dev/zero of={{ swap_file_path }} bs=1024 count={{ swap_file_size_mb|int + 1 }}k
+  args:
+    creates: "{{ swap_file_path }}"
+  tags:
+    - swap.file.create
+
+- name: Change swap file permissions
+  file:
+    path: "{{ swap_file_path }}"
+    owner: root
+    group: root
+    mode: 0600
+  tags:
+    - swap.file.permissions
+
+
+- name: "Check swap file type"
+  command: file "{{ swap_file_path }}"
+  register: swapfile
+  tags:
+    - swap.file.mkswap
+
+
+- name: Make swap file
+  command: "sudo mkswap {{ swap_file_path }}"
+  when: swapfile.stdout.find('swap file') == -1
+  register: swap_created
+  tags:
+    - swap.file.mkswap
+
+#---------------------
+# Make swap persist across reboot.
+#---------------------
+
+- name: Write swap entry in fstab
+  mount:
+    name: none
+    src: "{{ swap_file_path }}"
+    fstype: swap
+    opts: sw
+    passno: 0
+    dump: 0
+    state: present
+  tags:
+    - swap.fstab
+
+#---------------------
+# Enable swap for immediate use.
+#---------------------
+
+- name: Enable Swap usage
+  command: "swapon {{ swap_file_path }}"
+  when: swap_created.changed
+  tags:
+    - swap.file.swapon
+
+#---------------------
+# Set Swapiness value to 10 and reload sysctrl settings.
+#---------------------
+
+- name: Set swappiness factor to use physical before swap
+  sysctl:
+    name: vm.swappiness
+    value: 10
+    state: present
+    reload: yes
