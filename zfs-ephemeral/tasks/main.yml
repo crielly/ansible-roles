@@ -8,16 +8,29 @@
   retries: "{{ apt_retry_num }}"
   delay: "{{ apt_retry_delay }}"
   tags: add_repos
+  when: ansible_distribution_version == "14.04"
 
-- name: Ensure ZFS APT dependencies are installed
+- name: Ensure ZFS APT dependencies are installed - trusty
   apt:
     pkg: "{{ item }}"
     state: installed
-  with_items: "{{ zfs_apt_deps }}"
+  with_items: "{{ trusty_zfs_apt_deps }}"
   register: result
   until: result | success
   retries: "{{ apt_retry_num }}"
   delay: "{{ apt_retry_delay }}"
+  when: ansible_distribution_version == "14.04"
+
+- name: Ensure ZFS APT dependencies are installed - xenial
+  apt:
+    pkg: "{{ item }}"
+    state: installed
+  with_items: "{{ xenial_zfs_apt_deps }}"
+  register: result
+  until: result | success
+  retries: "{{ apt_retry_num }}"
+  delay: "{{ apt_retry_delay }}"
+  when: ansible_distribution_version == "16.04"
 
 - name: load ZFS kernel modules post-install
   modprobe:
