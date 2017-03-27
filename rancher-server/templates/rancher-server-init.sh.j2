@@ -1,0 +1,4 @@
+#!/bin/bash
+docker run -d --restart=unless-stopped -p 8080:8080 -p 9345:9345 rancher/server:stable \
+--db-host {{ rancher_rds_url }} --db-port {{ rancher_rds_port }} --db-user {{ rancher_rds_user }} --db-pass {{ rancher_rds_pass }} --db-name {{ rancher_rds_dbname }} \
+--advertise-address {{ ansible_ec2_local_ipv4 }}

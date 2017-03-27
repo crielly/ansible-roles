@@ -1,0 +1,17 @@
+- name: Gather EC2 Facts
+  action: ec2_facts
+
+- name: Lay down Rancher Server init script via Template
+  template:
+    src: rancher-server-init.sh.j2
+    dest: /usr/local/lib/rancher-server-init.sh
+    owner: root
+    mode: 0755
+
+- name: Run the Rancher Server init and join it to the HA cluster
+  command: sh /usr/local/lib/rancher-ha-init.sh
+  when: packer not in ['true', true]
+
+- wait_for:
+    port: "{{ rancher_agent_port }}"
+    delay: 5
