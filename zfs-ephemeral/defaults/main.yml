@@ -2,7 +2,10 @@ ephemeral_mount_points: [b, c, d, e, f, g, h, i]
 
 zfs_apt_repo: ppa:zfs-native/stable
 
-zfs_apt_deps:
+trusty_zfs_apt_deps:
   - ubuntu-zfs
+
+xenial_zfs_apt_deps:
+  - zfs
 
 zpool_name: mnt
