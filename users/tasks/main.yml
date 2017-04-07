@@ -23,10 +23,13 @@
     validate: 'visudo -cf %s'
     mode: 0440
 
-- name: Copy pubkeys into users authorized_key files
-  authorized_key:
-    user: "{{ item.0.name }}"
-    key: "{{ lookup('file', item.1) }}"
-  with_subelements:
-    - "{{ current_users }}"
-    - authorized
+- name: grab user ssh keys from github
+  uri:
+    url: "https://github.com/{{ item.github_user }}.keys"
+    return_content: yes
+    dest: "/home/{{ item.name }}/.ssh/authorized_keys"
+    creates: "/home/{{ item.name }}/.ssh/authorized_keys"
+    owner: "{{ item.name }}"
+    group: "{{ item.name }}"
+  with_items: "{{ current_users }}"
+  when: current_users is defined

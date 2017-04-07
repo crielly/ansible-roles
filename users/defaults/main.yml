@@ -1,3 +1,11 @@
+##### Example of a list of current users
+# current_users:		
+#   - name: crielly
+#     github_user: crielly
+#     uid: 10001
+#     shell: /bin/bash
+#     groups: operations
+
 
 base_svr_groups:
   - name: developers
