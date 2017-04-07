@@ -6,7 +6,6 @@
 #     shell: /bin/bash
 #     groups: operations
 
-
 base_svr_groups:
   - name: developers
     groupid: 30000
