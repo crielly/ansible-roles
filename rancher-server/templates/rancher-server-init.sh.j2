@@ -1,6 +1,6 @@
 #!/bin/bash
 docker run -d --restart=unless-stopped -p 8080:8080 -p 9345:9345 rancher/server:stable \
---db-host {{ rancher_secrets.secrets.rancher_rds_url }}.{{ rancher_secrets.secrets.rancher_cname_domain }} \
+--db-host {{ rancher_secrets.secrets.rancher_rds_url }} \
 --db-port {{ rancher_secrets.secrets.rancher_rds_port }} \
 --db-user {{ rancher_secrets.secrets.rancher_rds_user }} \
 --db-pass {{ rancher_secrets.secrets.rancher_rds_pass }} \
