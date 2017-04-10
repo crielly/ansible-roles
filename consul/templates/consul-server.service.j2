@@ -1,0 +1,17 @@
+[Unit]
+Description=Consul Server
+After=network.target
+
+[Service]
+User={{ consul_service_acct }}
+Group={{ consul_service_grp }}
+Environment="GOMAXPROCS=2"
+ExecStart=/usr/local/bin/consul agent -config-dir /etc/consul.d/server
+ExecReload=/bin/kill -9 $MAINPID
+KillSignal=SIGINT
+Restart=on-failure
+RestartSec=1
+
+[Install]
+
+WantedBy=default.target
