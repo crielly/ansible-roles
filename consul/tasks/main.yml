@@ -1,0 +1,54 @@
+- name: Create Groups
+  group: 
+    name: "{{ consul_service_grp }}"
+    state: present 
+
+- name: Create users
+  user: 
+    name: "{{ consul_service_acct }}"
+    state: present
+    shell: /bin/false
+    groups: "{{ consul_service_grp }}"
+
+- name: download and install consul binary
+  unarchive:
+    src: "{{ consul_bin_url }}"
+    dest: /usr/local/bin
+    remote_src: True
+    mode: 0555
+    owner: root
+    creates: /usr/local/bin/consul
+
+- name: make some directories for consul
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+  with_items:
+    - /etc/consul.d/server
+
+- name: create data directory for consul
+  file:
+    path: "{{ consul_data_dir }}"
+    state: directory
+    owner: "{{ consul_service_acct }}"
+    group: "{{ consul_service_grp }}"
+
+- name: Copy consul service to server
+  template:
+    src: consul-server.service.j2
+    dest: /lib/systemd/system/consul-server.service
+    owner: root
+
+- name: Copy consul server config file to server
+  template:
+    src: consul-server-config.json.j2
+    dest: /etc/consul.d/server/config.json
+
+- name: Start consul service
+  systemd:
+    state: "{{ item }}"
+    name: consul-server
+    daemon_reload: yes
+  with_items:
+    - started

@@ -9,10 +9,10 @@
 base_svr_groups:
   - name: developers
     groupid: 30000
-    sudo: false
+    privileged: false
   - name: operations
     groupid: 31000
-    sudo: true
+    privileged: true
   - name: qa
     groupid: 32000
-    sudo: false
+    privileged: false
