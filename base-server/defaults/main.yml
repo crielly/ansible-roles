@@ -10,3 +10,5 @@ ensure_latest_packages:
 
 apt_retry_num: 3
 apt_retry_delay: 10
+
+amibuilder: false
