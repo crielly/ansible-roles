@@ -2,6 +2,6 @@ consul_version: 0.8.0
 consul_bin_url: https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip
 consul_service_acct: consul
 consul_service_grp: consul
-consul_encryption_key: Null
+consul_encryption_key: "K6J8JqfpBD0aeSG5yS6fMQ=="
 
 consul_data_dir: /var/consul
