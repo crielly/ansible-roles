@@ -1,0 +1,14 @@
+- name: ensure keybase directory exists
+  file:
+    path: /opt/keybase/.well-known
+    state: directory
+    recurse: yes
+    mode: 0755
+    owner: "{{ ghost_user }}"
+    group: "{{ ghost_user_group }}"
+
+- name: lay down keybase.txt
+  template:
+    src: keybase.txt.j2
+    dest: "/opt/keybase/.well-known/keybase.txt"
+  notify: reload nginx

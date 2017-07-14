@@ -21,4 +21,9 @@ server {
 
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains;";
   }
+
+  location /.well-known  {
+        add_header Content-Type text/plain;
+        root /opt/keybase;
+  }
 }
