@@ -1,0 +1,13 @@
+ephemeral_mount_points: [b, c, d, e, f, g, h, i]
+
+vgname: ephem_vg
+lvolname: ephem_lv
+mountpath: /mnt/ephem
+fstype: ext4
+
+ephem_owner: root
+ephem_group_owner: root
+ephem_permissions: 0777
+
+lvgsize: 100%FREE
+lvolsize: 90%FREE
