@@ -1,0 +1,54 @@
+- name: Create an empty list of devices to which we'll add any ephemeral devices we find
+  set_fact:
+    devices: []
+
+- name: Check list of ephemeral mount points for devices
+  stat:
+    path: "/dev/xvd{{ item }}"
+  with_items: "{{ ephemeral_mount_points }}"
+  register: ephem_disks
+
+- name: Add device to ephem_disks list if it exists and is a block device
+  set_fact:
+    devices: "{{ devices }} + ['{{ item.stat.path }}']"
+  when: item.stat.exists and item.stat.isblk
+  with_items: "{{ ephem_disks.results }}"
+
+- name: create volume group
+  lvg:
+    vg: "{{ vgname }}"
+    pvs: "{{ devices }}"
+  state: present
+  register: lvm_check
+
+- name: create logical volume
+  lvol:
+    vg: "{{ vgname }}"
+    lv: "{{ lvolname }}"
+    shrink: false
+    size: "{{ lvolsize }}"
+  state: present
+
+- name: ensure ephemeral disk mountpoint exists
+  file:
+    path: "{{ mountpath }}"
+    state: directory
+    owner: "{{ ephem_owner }}"
+    group: "{{ ephem_group_owner }}"
+    mode: "{{ ephem_permissions }}"
+
+- name: create filesystem on logical volume
+  filesystem:
+    fstype: "{{ fstype }}"
+    dev: "/dev/{{ vgname }}/{{ lvolname }}"
+
+- name: Mount LVM
+  mount:
+    path: "{{ mountpath }}"
+    src: "/dev/{{ vgname }}/{{ lvolname }}"
+    fstype: "{{ fstype }}"
+    opts: rw
+    state: "{{ item }}"
+  with_items:
+    - present
+    - mounted

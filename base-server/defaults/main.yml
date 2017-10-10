@@ -6,6 +6,7 @@ ensure_latest_packages:
   - tmux
   - htop
   - python3-pip
+  - jq
 
 apt_retry_num: 3
 apt_retry_delay: 10
