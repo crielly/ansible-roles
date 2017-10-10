@@ -10,4 +10,4 @@ ephem_group_owner: root
 ephem_permissions: 0777
 
 lvgsize: 100%FREE
-lvolsize: 80%FREE
+lvolsize: 90%FREE
