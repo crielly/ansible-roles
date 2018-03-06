@@ -1,0 +1,10 @@
+consul_version: 0.8.0
+consul_bin_url: https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip
+consul_service_acct: consul
+consul_service_grp: consul
+consul_encryption_key: "seriouslyconsiderusingarealkey"
+consul_role: agent
+
+consul_data_dir: /var/consul
+consul_log_path: /var/log/consul.log
+consul_config_dir: /etc/consul.d

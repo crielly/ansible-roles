@@ -1,0 +1,110 @@
+- name: Create Groups
+  group: 
+    name: "{{ consul_service_grp }}"
+    state: present 
+
+- name: Create users
+  user: 
+    name: "{{ consul_service_acct }}"
+    state: present
+    shell: /bin/false
+    groups: "{{ consul_service_grp }}"
+
+- name: Install unzip
+  apt:
+    pkg: unzip
+    state: present
+  register: result
+  until: result | success
+  retries: "{{ apt_retry_num }}"
+  delay: "{{ apt_retry_delay }}"
+
+- name: download and install consul binary
+  unarchive:
+    src: "{{ consul_bin_url }}"
+    dest: /usr/local/bin
+    remote_src: True
+    mode: 0555
+    owner: root
+    creates: /usr/local/bin/consul
+
+- name: make some directories for consul
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+  with_items:
+    - "{{ consul_config_dir }}"
+
+- name: create data directory for consul
+  file:
+    path: "{{ consul_data_dir }}"
+    state: directory
+    owner: "{{ consul_service_acct }}"
+    group: "{{ consul_service_grp }}"
+
+- name: create consul log file
+  file:
+    path: "{{ consul_log_path }}"
+    state: touch
+    owner: "{{ consul_service_acct }}"
+    group: "{{ consul_service_grp }}"
+    mode: 0644
+
+- name: Copy consul server service
+  template:
+    src: consul-server.service.j2
+    dest: /etc/init/consul.conf
+    owner: root
+  when: consul_role in ['server']
+
+- name: Copy consul server config file to server
+  template:
+    src: consul-server-config.json.j2
+    dest: "{{ consul_config_dir }}/server.json"
+  when: consul_role in ['server']
+
+- name: Copy consul agent service
+  template:
+    src: consul-agent.service.j2
+    dest: /etc/init/consul.conf
+    owner: root
+  when: consul_role in ['agent']
+
+- name: Copy consul agent config file to server
+  template:
+    src: consul-agent-config.json.j2
+    dest: "{{ consul_config_dir }}/agent.json"
+  when: consul_role in ['agent']
+
+- name: lay down override to ensure consul service doesn't start prematurely
+  template:
+    src: consul-server.override
+    dest: /etc/init/consul.override
+  when: amibuilder
+
+- name: ensure override file is not present during deploy
+  file:
+    path: /etc/init/consul.override
+    state: absent
+  when: not amibuilder
+
+- name: Start consul service
+  service:
+    state: "{{ item }}"
+    name: consul
+  with_items:
+    - started
+  when: not amibuilder
+
+- name: Stop consul service when amibuilder
+  service:
+    state: "{{ item }}"
+    name: consul
+  with_items:
+    - stopped
+  when: amibuilder
+
+- name: wipe out /var/consul/* when amibuilder
+  shell: "rm -rf {{ consul_data_dir }}/*"
+  when: amibuilder

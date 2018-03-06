@@ -1,0 +1,18 @@
+{
+  "server": false,
+  "client_addr": "0.0.0.0",
+  "ui": true,
+  "datacenter": "{{ ansible_ec2_placement_region }}",
+  "data_dir": "{{ consul_data_dir }}",
+  "log_level": "INFO",
+  "enable_syslog": true,
+  "node_name": "{{ inventory_hostname }}",
+  "encrypt": "{{ consul_encryption_key }}",
+  "leave_on_terminate": true,
+  "bind_addr": "0.0.0.0",
+  "retry_join_ec2": {
+    "region": "{{ ansible_ec2_placement_region }}",
+    "tag_key": "consul-dc",
+    "tag_value": "consul-{{ ansible_ec2_placement_region}}"
+  }
+}

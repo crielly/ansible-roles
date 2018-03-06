@@ -1,0 +1,20 @@
+description "Consul agent process"
+
+start on (local-filesystems and net-device-up IFACE=eth0)
+stop on runlevel [!12345]
+
+pre-stop exec consul leave
+
+respawn
+respawn limit 10 300
+
+setuid {{ consul_service_acct }}
+setgid {{ consul_service_grp }}
+
+console log
+export GOMAXPROCS=`nproc`
+
+exec consul agent \
+  "--config-dir={{ consul_config_dir }}" \
+  ${CONSUL_FLAGS} \
+  >> {{ consul_log_path }} 2>&1

@@ -1,0 +1,77 @@
+- name: Create Groups
+  group: 
+    name: "{{ vault_service_grp }}"
+    state: present 
+
+- name: Create users
+  user: 
+    name: "{{ vault_service_acct }}"
+    state: present
+    shell: /bin/false
+    groups: "{{ vault_service_grp }}"
+
+- name: Install unzip
+  apt:
+    pkg: unzip
+    state: present
+  register: result
+  until: result | success
+  retries: "{{ apt_retry_num }}"
+  delay: "{{ apt_retry_delay }}"
+
+- name: download and install vault binary
+  unarchive:
+    src: "{{ vault_bin_url }}"
+    dest: /usr/local/bin
+    remote_src: True
+    mode: 0555
+    owner: root
+    creates: /usr/local/bin/vault
+
+- name: make some directories for vault
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+  with_items:
+    - "{{ vault_config_dir }}"
+
+- name: enable mlock for the vault binary
+  capabilities:
+    path: /usr/local/bin/vault
+    capability: 'cap_ipc_lock+ep'
+    state: present
+
+- name: ensure VAULT_ADDR is set for use with vault CLI
+  lineinfile:
+    destfile: /etc/environment
+    line: 'VAULT_ADDR=http://localhost:8200'
+
+- name: create vault log files
+  file:
+    path: "{{ item }}"
+    state: touch
+    owner: "{{ vault_service_acct }}"
+    group: "{{ vault_service_grp }}"
+    mode: 0600
+  with_items:
+    - "{{ vault_log_path }}"
+    - "{{ vault_audit_log_path }}"
+
+- name: Copy vault service to server
+  template:
+    src: vault-server.service.j2
+    dest: /etc/init/vault.conf
+    owner: root
+
+- name: Copy vault server config file to server
+  template:
+    src: vaultconfig.hcl.j2
+    dest: "{{ vault_config_dir }}/vaultconfig.hcl"
+
+- name: Start vault service
+  service:
+    state: started
+    name: vault
+    enabled: yes
+  when: not amibuilder

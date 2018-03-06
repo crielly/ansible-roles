@@ -1,0 +1,7 @@
+vault_version: 0.7.3
+vault_bin_url: https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_linux_amd64.zip
+vault_service_acct: vault
+vault_service_grp: vault
+vault_log_path: /var/log/vault.log
+vault_audit_log_path: /var/log/vault_audit.log
+vault_config_dir: /etc/vault.d

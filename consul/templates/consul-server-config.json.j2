@@ -1,0 +1,23 @@
+{
+  "bootstrap_expect": 3,
+  "server": true,
+  "client_addr": "0.0.0.0",
+  "ui": true,
+  "datacenter": "{{ ansible_ec2_placement_region }}",
+  "data_dir": "{{ consul_data_dir }}",
+  "log_level": "INFO",
+  "enable_syslog": true,
+  "node_name": "{{ ansible_hostname }}",
+  "encrypt": "{{ consul_encryption_key }}",
+  "leave_on_terminate": true,
+  "bind_addr": "0.0.0.0",
+  "retry_join_ec2": {
+    "region": "{{ ansible_ec2_placement_region }}",
+    "tag_key": "consul-dc",
+    "tag_value": "consul-{{ ansible_ec2_placement_region}}"
+  },
+  "acl_datacenter":"{{ ansible_ec2_placement_region }}",
+  "acl_default_policy":"allow",
+  "acl_down_policy":"extend-cache",
+  "acl_master_token":"1cb875b3-c8e0-48b1-86ce-9e1df620506b"
+}
