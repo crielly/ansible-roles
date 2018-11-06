@@ -1,0 +1,18 @@
+{
+  "api.version":"v1",
+  "sources":[
+    {
+      "sourceType":"LocalFile",
+      "name": "nginx access log",
+      "category": "{{ env_name }}/{{ service_name }}",
+      "multilineProcessingEnabled": "true",
+      "pathExpression":"/var/log/nginx/access.log"
+    },{
+      "sourceType":"LocalFile",
+      "name": "nginx error log",
+      "category": "{{ env_name }}/{{ service_name }}",
+      "multilineProcessingEnabled": "true",
+      "pathExpression":"/var/log/nginx/error.log"
+    }
+  ]
+}

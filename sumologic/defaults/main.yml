@@ -1,0 +1,19 @@
+sumo_deb_url: https://collectors.sumologic.com/rest/download/deb/64
+
+env_name: dev
+service_name: 
+
+pkg_retry_num: 3
+pkg_retry_delay: 10 
+
+sumo_access_id:
+sumo_secret: 
+sumo_install_path: /opt/SumoCollector
+sumo_source_path: "{{ sumo_install_path }}/sources"
+sumo_source_path_owner: root
+sumo_source_path_group: sumologic_collector
+
+sumo_sources:
+  - name: nginx logs
+    src: nginx.json.j2
+    dest: nginx.json
