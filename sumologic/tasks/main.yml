@@ -1,0 +1,32 @@
+- name: install sumologic collector agent
+  apt:
+    deb: "{{ sumo_deb_url }}"
+  register: result
+  until: result is success
+  retries: "{{ pkg_retry_num }}"
+  delay: "{{ pkg_retry_delay }}"
+
+- name: ensure sumo source directory exists
+  file:
+    state: directory
+    path: "{{ sumo_source_path }}"
+    owner: "{{ sumo_source_path_owner }}"
+    group: "{{ sumo_source_path_group }}"
+    mode: "u=rwx,g=rwx,o=r"
+
+- name: lay down user.properties
+  template:
+    src: user.properties.j2
+    dest: "{{ sumo_install_path }}/config/user.properties"
+    owner: "{{ sumo_source_path_owner }}"
+    group: "{{ sumo_source_path_group }}"
+    mode: "u=rwx,g=rwx,o=r"
+
+- name: lay down source files
+  template:
+    src: "sources/{{ item.src }}"
+    dest: "{{ sumo_source_path }}/{{ item.dest }}"
+    owner: "{{ sumo_source_path_owner }}"
+    group: "{{ sumo_source_path_group }}"
+    mode: "u=rwx,g=rwx,o=r"
+  with_items: "{{ sumo_sources }}"
